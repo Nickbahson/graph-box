@@ -40065,17 +40065,13 @@ _wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_1___default()(function () {
       'content-type': 'application/json',
       'X-WP-Nonce': wpApiSettings.nonce
     };
+    const dataUrl = `${graphBoxData.rest_url}?days=${selectedDays}`;
     (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-      fetch(graphBoxData.rest_url, {
+      fetch(dataUrl, {
         credentials: 'include',
         headers
       }).then(res => res.json()).then(data => {
-        console.log("||||||||||||||||| data ||||||||||||||||");
-        console.log("||||||||||||||||| data ||||||||||||||||");
-        console.log(data);
         setData(data);
-        console.log("||||||||||||||||| data ||||||||||||||||");
-        console.log("||||||||||||||||| data ||||||||||||||||");
       }).catch(err => console.warn(err));
     }, [selectedDays]);
     return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {

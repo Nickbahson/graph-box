@@ -35,20 +35,17 @@ domReady( function () {
             'X-WP-Nonce': wpApiSettings.nonce
         }
 
+        const dataUrl = `${graphBoxData.rest_url}?days=${selectedDays}`
+
         useEffect(() => {
 
-            fetch(graphBoxData.rest_url,{
+            fetch(dataUrl,{
                 credentials: 'include',
                 headers
             })
                 .then((res) => res.json())
                 .then((data) => {
-                    console.log("||||||||||||||||| data ||||||||||||||||")
-                    console.log("||||||||||||||||| data ||||||||||||||||")
-                    console.log(data)
                     setData(data)
-                    console.log("||||||||||||||||| data ||||||||||||||||")
-                    console.log("||||||||||||||||| data ||||||||||||||||")
                 })
                 .catch((err) => console.warn(err))
 

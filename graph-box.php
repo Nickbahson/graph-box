@@ -18,6 +18,8 @@
 
 namespace Nick\GraphBox;
 
+use WP_REST_Request;
+
 if (!defined('ABSPATH')) {
 	exit();
 }
@@ -142,14 +144,20 @@ if (!class_exists('Graph_Box')) {
    }
 
   }
-  public function graph_box_data() {
+  public function graph_box_data(WP_REST_Request $request) {
+
+   if ($request->get_param( 'days' ) == null ) {
+	   return new \WP_Error( 'no_data', 'The range in days, must be included', array( 'status' => 404 ) );
+   }
+
+   $days = intval($request->get_param( 'days' ));
 
 	  global $wpdb;
 
 	  $prepared = [];
 
 	  $data_sql = "SELECT DATE_FORMAT(sale_at, '%Y-%m-%d') as period_start_date, SUM(amount) as total_amount FROM `wp_graph_box_entries`";
-	  $prepared[]  = $wpdb->prepare("GROUP BY FLOOR(DATEDIFF(sale_at, '2020-01-01') / %s)", 7);
+	  $prepared[]  = $wpdb->prepare("GROUP BY FLOOR(DATEDIFF(sale_at, '2020-01-01') / %s)", $days);
 
 	  $data_sql .= ' '.join($prepared);
 
