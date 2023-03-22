@@ -44,6 +44,10 @@ if (!class_exists('Graph_Box')) {
    add_action( 'rest_api_init', array ($this, 'graph_box_rest') );
 		}
 
+	 /**
+   * Initial setup.
+	  * @return void
+	  */
   public function graph_box_install_setup(){
 	  global $wpdb;
 	  $table = $wpdb->prefix . "graph_box_entries";
@@ -73,6 +77,11 @@ if (!class_exists('Graph_Box')) {
       }
 
   }
+
+	 /**
+   * Clean up.
+	  * @return void
+	  */
   public function graph_box_uninstall_setup(){
 	  global $wpdb;
 	  $tables = array(
@@ -84,15 +93,24 @@ if (!class_exists('Graph_Box')) {
 	  }
 
   }
-		public function add_graph_box_widget() {
+
+	 /**
+   * Defines a dashboard widget.
+	  * @return void
+	  */
+  public function add_graph_box_widget() {
 			wp_add_dashboard_widget(
 				'graph_box_view',
-				__( 'Graph Widget', 'graph-box' ),
+				__( 'Graph Box', 'graph-box' ),
 				array( $this, 'render_graph_box_widget' )
 			);
 		}
 
-		public function graph_box_admin_scripts(){
+	 /**
+   * Registers and loads the react app script
+	  * @return void
+	  */
+  public function graph_box_admin_scripts(){
 			$scripts = plugins_url('/', __FILE__ ). 'build/index.js';
 			wp_register_script(
 				'graph-box',
@@ -125,6 +143,10 @@ if (!class_exists('Graph_Box')) {
 
 		}
 
+	 /**
+   * Defines a rest route.
+	  * @return void
+	  */
   public function graph_box_rest() {
     register_rest_route( 'graph-box/v1', '/data/', array(
      'methods' => 'GET',
@@ -134,7 +156,6 @@ if (!class_exists('Graph_Box')) {
   }
 
   public function validate_user() {
-   //return true;
 	  $user = wp_get_current_user();
 	  $allowed_roles = array('administrator');
 	  if( array_intersect($allowed_roles, $user->roles ) ) {
@@ -144,6 +165,13 @@ if (!class_exists('Graph_Box')) {
    }
 
   }
+
+	 /**
+   * Gets the data to be used by the graph, according to filters passed.
+	  * @param WP_REST_Request $request
+	  *
+	  * @return array|object|\stdClass[]|\WP_Error
+	  */
   public function graph_box_data(WP_REST_Request $request) {
 
    if ($request->get_param( 'days' ) == null ) {
@@ -171,7 +199,11 @@ if (!class_exists('Graph_Box')) {
   return $data;
   }
 
-		public function render_graph_box_widget() {
+	 /**
+   * Outputs the markup to attach the react app to.
+	  * @return void
+	  */
+  public function render_graph_box_widget() {
 			?>
 			<div id="graph-box-wrapper">
 

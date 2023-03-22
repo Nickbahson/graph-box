@@ -1,78 +1,86 @@
 import domReady from '@wordpress/dom-ready';
-import { render } from '@wordpress/element';
-import { __ } from '@wordpress/i18n'
-import { SelectControl } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
+import {
+	SelectControl,
+	Flex,
+	FlexItem,
+	Card,
+	CardBody,
+} from '@wordpress/components';
 
-import { useState, useEffect } from '@wordpress/element';
+import { render, useState, useEffect } from '@wordpress/element';
 
-import { LineChart, Line, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 
-const RenderLineChart = ({data}) => {
-
-    return (
-        <LineChart width={600} height={400} data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-            <Line type="monotone" dataKey="total_amount" stroke="#8884d8" />
-            <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-            <XAxis dataKey="period_start_date" />
-            <YAxis />
-        </LineChart>
-    )
-}
+const RenderChart = ( { data } ) => {
+	return (
+		<BarChart width={ 350 } height={ 300 } data={ data }>
+			<XAxis dataKey="period_start_date" stroke="#8884d8" />
+			<YAxis />
+			<Tooltip />
+			<CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+			<Bar dataKey="total_amount" fill="#8884d8" barSize={ 20 } />
+		</BarChart>
+	);
+};
 domReady( function () {
-    const htmlOutput = document.getElementById(
-        'graph-box-wrapper'
-    );
+	const htmlOutput = document.getElementById( 'graph-box-wrapper' );
 
+	const App = () => {
+		const [ selectedDays, setDays ] = useState( '7' );
+		const [ data, setData ] = useState( [] );
 
+		const headers = {
+			'content-type': 'application/json',
+			'X-WP-Nonce': wpApiSettings.nonce,
+		};
 
-    const SelectDays = () => {
+		const dataUrl = `${ graphBoxData.rest_url }?days=${ selectedDays }`;
 
-        const [ selectedDays, setDays ] = useState('7');
-        const [ data, setData ] = useState([]);
+		useEffect( () => {
+			fetch( dataUrl, {
+				credentials: 'include',
+				headers,
+			} )
+				.then( ( res ) => res.json() )
+				.then( ( newData ) => {
+					setData( newData );
+				} )
+				.catch( ( err ) => console.warn( err ) );
+		}, [ selectedDays ] );
 
-        const headers = {
-            'content-type': 'application/json',
-            'X-WP-Nonce': wpApiSettings.nonce
-        }
+		return (
+			<>
+				<Card size="small">
+					<CardBody>
+						<Flex>
+							<FlexItem>
+								<h3>{ __( 'Graph Widget', 'graph-box' ) }</h3>
+							</FlexItem>
+							<FlexItem>
+								<SelectControl
+									label={ __( 'Days', 'graph-box' ) }
+									value={ selectedDays }
+									options={ [
+										{ label: '7 days', value: '7' },
+										{ label: '15 days', value: '15' },
+										{ label: '1 Month', value: '30' },
+									] }
+									onChange={ ( value ) => setDays( value ) }
+									__nextHasNoMarginBottom
+								/>
+							</FlexItem>
+						</Flex>
+					</CardBody>
+					<CardBody>
+						<RenderChart data={ data } />
+					</CardBody>
+				</Card>
+			</>
+		);
+	};
 
-        const dataUrl = `${graphBoxData.rest_url}?days=${selectedDays}`
-
-        useEffect(() => {
-
-            fetch(dataUrl,{
-                credentials: 'include',
-                headers
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    setData(data)
-                })
-                .catch((err) => console.warn(err))
-
-        }, [selectedDays])
-
-
-
-        return (
-            <>
-                <SelectControl
-                    label={__('Days', 'graph-box')}
-                    value={ selectedDays }
-                    options={ [
-                        { label: '7 days', value: '7' },
-                        { label: '15 days', value: '15' },
-                        { label: '1 Month', value: '30' },
-                    ] }
-                    onChange={ ( value ) => setDays( value ) }
-                    __nextHasNoMarginBottom
-                />
-                <RenderLineChart data={data}/>
-            </>
-        )
-    }
-
-
-    if ( htmlOutput ) {
-        render( <SelectDays/>, htmlOutput );
-    }
+	if ( htmlOutput ) {
+		render( <App />, htmlOutput );
+	}
 } );
