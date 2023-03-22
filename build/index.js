@@ -40045,38 +40045,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const RenderLineChart = () => {
-  const data = [{
-    name: 'Page A',
-    uv: 400,
-    pv: 2400,
-    amt: 2400
-  }, {
-    name: 'Page B',
-    uv: 500,
-    pv: 2800,
-    amt: 2900
-  }, {
-    name: 'Page C',
-    uv: 450,
-    pv: 1400,
-    amt: 6400
-  }, {
-    name: 'Page D',
-    uv: 600,
-    pv: 5400,
-    amt: 3500
-  }, {
-    name: 'Page W',
-    uv: 800,
-    pv: 4400,
-    amt: 1800
-  }, {
-    name: 'Page Z',
-    uv: 700,
-    pv: 3400,
-    amt: 4800
-  }];
+
+// wp-2023.ddev.site/wp-json/graph-box/v1/data/
+const RenderLineChart = _ref => {
+  let {
+    data
+  } = _ref;
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(recharts__WEBPACK_IMPORTED_MODULE_5__.LineChart, {
     width: 600,
     height: 300,
@@ -40101,10 +40075,28 @@ const RenderLineChart = () => {
 _wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_1___default()(function () {
   const htmlOutput = document.getElementById('graph-box-wrapper');
   const SelectDays = () => {
-    const [type, setDays] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)('7');
+    const [selectedDays, setDays] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)('7');
+    const [data, setData] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+    const headers = {
+      'content-type': 'application/json',
+      'X-WP-Nonce': wpApiSettings.nonce
+    };
+    (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+      fetch(graphBoxData.rest_url, {
+        credentials: 'include',
+        headers
+      }).then(res => res.json()).then(data => {
+        console.log("||||||||||||||||| data ||||||||||||||||");
+        console.log("||||||||||||||||| data ||||||||||||||||");
+        console.log(data);
+        setData(data);
+        console.log("||||||||||||||||| data ||||||||||||||||");
+        console.log("||||||||||||||||| data ||||||||||||||||");
+      }).catch(err => console.warn(err));
+    }, [selectedDays]);
     return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
-      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Product Type', 'flair-store'),
-      value: type,
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Days', 'graph-box'),
+      value: selectedDays,
       options: [{
         label: '7 days',
         value: '7'
@@ -40117,7 +40109,9 @@ _wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_1___default()(function () {
       }],
       onChange: value => setDays(value),
       __nextHasNoMarginBottom: true
-    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(RenderLineChart, null));
+    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(RenderLineChart, {
+      data: data
+    }));
   };
   if (htmlOutput) {
     (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.render)((0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(SelectDays, null), htmlOutput);
