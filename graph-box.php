@@ -184,7 +184,9 @@ if (!class_exists('Graph_Box')) {
 
 	  $prepared = [];
 
-	  $data_sql = "SELECT DATE_FORMAT(sale_at, '%Y-%m-%d') as period_start_date, SUM(amount) as total_amount FROM `wp_graph_box_entries`";
+   $table = $wpdb->prefix . "graph_box_entries";
+
+	  $data_sql = "SELECT DATE_FORMAT(sale_at, '%Y-%m-%d') as period_start_date, SUM(amount) as total_amount FROM {$table}";
 	  $prepared[]  = $wpdb->prepare("GROUP BY FLOOR(DATEDIFF(sale_at, '2020-01-01') / %s)", $days);
 
 	  $data_sql .= ' '.join($prepared);
