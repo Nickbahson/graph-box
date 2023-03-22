@@ -30,18 +30,47 @@ if (!class_exists('Graph_Box')) {
 
 		public function __construct() {
 			add_action('wp_dashboard_setup', array ($this, 'add_graph_box_widget'));
+
+			add_action( 'admin_enqueue_scripts', array ($this, 'graph_box_admin_scripts'), 10 );
 		}
 
 		public function add_graph_box_widget() {
 			wp_add_dashboard_widget(
 				'graph_box_view',
-				__( 'Graph box', 'graph-box' ),
+				__( 'Graph Widget', 'graph-box' ),
 				array( $this, 'render_graph_box_widget' )
 			);
 		}
 
+		public function graph_box_admin_scripts(){
+			$scripts = plugins_url('/', __FILE__ ). 'build/index.js';
+			wp_register_script(
+				'graph-box',
+				$scripts,
+				array('react', 'react-dom', 'wp-api', 'wp-components', 'wp-dom-ready', 'wp-element', 'wp-i18n'),
+				1,
+				false
+			);
+
+			wp_enqueue_script(
+				'graph-box',
+				$scripts,
+				array('react', 'react-dom', 'wp-api', 'wp-components', 'wp-dom-ready', 'wp-element', 'wp-i18n'),
+				1,
+				true
+			);
+
+			wp_add_inline_script('graph-box', 'var graphBoxData = {}');
+
+
+		}
+
 		public function render_graph_box_widget() {
-			echo '<strong>Attach graph here.</strong>';
+			?>
+			<div id="graph-box-wrapper">
+
+			</div>
+			<?php
 		}
 
 
