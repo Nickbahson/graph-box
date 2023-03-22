@@ -29,6 +29,12 @@ if (!class_exists('Graph_Box')) {
 		public static $instance;
 
 		public function __construct() {
+
+	  // On install or update
+	  register_activation_hook( __FILE__, array( $this, 'graph_box_install_setup' ) );
+
+	  register_deactivation_hook( __FILE__, array( $this, 'graph_box_uninstall_setup' ) );
+
 			add_action( 'wp_dashboard_setup', array ($this, 'add_graph_box_widget') );
 
 			add_action( 'admin_enqueue_scripts', array ($this, 'graph_box_admin_scripts'), 10 );
@@ -36,6 +42,46 @@ if (!class_exists('Graph_Box')) {
    add_action( 'rest_api_init', array ($this, 'graph_box_rest') );
 		}
 
+  public function graph_box_install_setup(){
+	  global $wpdb;
+	  $table = $wpdb->prefix . "graph_box_entries";
+
+	  $charset        = $wpdb->get_charset_collate();
+
+	  $sql = "CREATE TABLE $table(
+ 		id mediumint NOT NULL AUTO_INCREMENT,
+ 		amount bigint NOT NULL,
+ 		sale_at datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+ 		PRIMARY KEY (id)
+ 	    )$charset;";
+
+	  require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	  dbDelta( $sql );
+
+   // Generate fake data:
+      for ($i = 0; $i < 300; $i++) {
+       $date = date('Y-m-d H:i:s', strtotime( '+'.mt_rand(2,700).' days'));
+       $amount = mt_rand(10, 3000);
+       $data = array (
+         'amount' => $amount,
+         'sale_at' => $date
+       );
+
+	      $wpdb->insert( $table, $data);
+      }
+
+  }
+  public function graph_box_uninstall_setup(){
+	  global $wpdb;
+	  $tables = array(
+		  $wpdb->prefix . "graph_box_entries",
+	  );
+	  foreach ( $tables as $table ) {
+		  $sql = "DROP TABLE IF EXISTS $table";
+		  $wpdb->query( $sql );
+	  }
+
+  }
 		public function add_graph_box_widget() {
 			wp_add_dashboard_widget(
 				'graph_box_view',
@@ -98,19 +144,20 @@ if (!class_exists('Graph_Box')) {
   }
   public function graph_box_data() {
 
-   $data = array (
-     array ('name' => 'Page A', 'uv' => 400, 'pv' => 2400, 'amt' => 2400),
-     array ('name' => 'Page B', 'uv' => 800, 'pv' => 6400, 'amt' => 3500),
-     array ('name' => 'Page V', 'uv' => 1400, 'pv' => 1500, 'amt' => 1500),
-     array ('name' => 'Page E', 'uv' => 5000, 'pv' => 2300, 'amt' => 4800),
-     array ('name' => 'Page Z', 'uv' => 400, 'pv' => 1800, 'amt' => 5600),
-     array ('name' => 'Page W', 'uv' => 890, 'pv' => 1200, 'amt' => 9600),
-     array ('name' => 'Page X', 'uv' => 4100, 'pv' => 4400, 'amt' => 8400)
-   );
+	  global $wpdb;
+
+	  $prepared = [];
+
+	  $data_sql = "SELECT DATE_FORMAT(sale_at, '%Y-%m-%d') as period_start_date, SUM(amount) as total_amount FROM `wp_graph_box_entries`";
+	  $prepared[]  = $wpdb->prepare("GROUP BY FLOOR(DATEDIFF(sale_at, '2020-01-01') / %s)", 7);
+
+	  $data_sql .= ' '.join($prepared);
+
+	  $data = $wpdb->get_results( $data_sql, OBJECT );
 
 
   if ( empty( $data ) ) {
-	  return new \WP_Error( 'no_author', 'Invalid author', array( 'status' => 404 ) );
+	  return new \WP_Error( 'no_data', 'No data to show', array( 'status' => 404 ) );
   }
 
   return $data;
@@ -125,6 +172,10 @@ if (!class_exists('Graph_Box')) {
 		}
 
 
+	 /**
+   * Runs a single instance of Graph_Box
+	  * @return Graph_Box
+	  */
 		public static function run(){
 			if (!isset(self::$instance)) {
 				self::$instance = new Graph_Box();

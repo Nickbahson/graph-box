@@ -30901,17 +30901,6 @@ module.exports = window["wp"]["components"];
 
 /***/ }),
 
-/***/ "@wordpress/data":
-/*!******************************!*\
-  !*** external ["wp","data"] ***!
-  \******************************/
-/***/ ((module) => {
-
-"use strict";
-module.exports = window["wp"]["data"];
-
-/***/ }),
-
 /***/ "@wordpress/dom-ready":
 /*!**********************************!*\
   !*** external ["wp","domReady"] ***!
@@ -40030,13 +40019,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/chart/LineChart.js");
-/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/Line.js");
-/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/CartesianGrid.js");
-/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/XAxis.js");
-/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/YAxis.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/chart/LineChart.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/Line.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/CartesianGrid.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/XAxis.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/YAxis.js");
 
 
 
@@ -40044,16 +40031,13 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-
-// wp-2023.ddev.site/wp-json/graph-box/v1/data/
 const RenderLineChart = _ref => {
   let {
     data
   } = _ref;
-  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(recharts__WEBPACK_IMPORTED_MODULE_5__.LineChart, {
+  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(recharts__WEBPACK_IMPORTED_MODULE_4__.LineChart, {
     width: 600,
-    height: 300,
+    height: 400,
     data: data,
     margin: {
       top: 5,
@@ -40061,16 +40045,16 @@ const RenderLineChart = _ref => {
       bottom: 5,
       left: 0
     }
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(recharts__WEBPACK_IMPORTED_MODULE_6__.Line, {
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(recharts__WEBPACK_IMPORTED_MODULE_5__.Line, {
     type: "monotone",
-    dataKey: "uv",
+    dataKey: "total_amount",
     stroke: "#8884d8"
-  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(recharts__WEBPACK_IMPORTED_MODULE_7__.CartesianGrid, {
+  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(recharts__WEBPACK_IMPORTED_MODULE_6__.CartesianGrid, {
     stroke: "#ccc",
     strokeDasharray: "5 5"
-  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(recharts__WEBPACK_IMPORTED_MODULE_8__.XAxis, {
-    dataKey: "name"
-  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(recharts__WEBPACK_IMPORTED_MODULE_9__.YAxis, null));
+  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(recharts__WEBPACK_IMPORTED_MODULE_7__.XAxis, {
+    dataKey: "period_start_date"
+  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(recharts__WEBPACK_IMPORTED_MODULE_8__.YAxis, null));
 };
 _wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_1___default()(function () {
   const htmlOutput = document.getElementById('graph-box-wrapper');
@@ -40101,10 +40085,10 @@ _wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_1___default()(function () {
         label: '7 days',
         value: '7'
       }, {
-        label: '14 days',
-        value: '14'
+        label: '15 days',
+        value: '15'
       }, {
-        label: '30 days',
+        label: '1 Month',
         value: '30'
       }],
       onChange: value => setDays(value),
@@ -40117,7 +40101,6 @@ _wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_1___default()(function () {
     (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.render)((0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(SelectDays, null), htmlOutput);
   }
 });
-console.log("HERE nOW");
 })();
 
 /******/ })()
