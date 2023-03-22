@@ -24,11 +24,24 @@ if (!defined('ABSPATH')) {
 
 define( 'GRAPH_BOX_PLUGIN_DIR', __DIR__ );
 
-if (!class_exists('Nick\GraphBox\Graph_Box')) {
+if (!class_exists('Graph_Box')) {
 	class Graph_Box {
 		public static $instance;
 
 		public function __construct() {
+			add_action('wp_dashboard_setup', array ($this, 'add_graph_box_widget'));
+		}
+
+		public function add_graph_box_widget() {
+			wp_add_dashboard_widget(
+				'graph_box_view',
+				__( 'Graph box', 'graph-box' ),
+				array( $this, 'render_graph_box_widget' )
+			);
+		}
+
+		public function render_graph_box_widget() {
+			echo '<strong>Attach graph here.</strong>';
 		}
 
 
