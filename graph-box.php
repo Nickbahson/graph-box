@@ -175,7 +175,7 @@ if (!class_exists('Graph_Box')) {
   public function graph_box_data(WP_REST_Request $request) {
 
    if ($request->get_param( 'days' ) == null ) {
-	   return new \WP_Error( 'no_data', 'The range in days, must be included', array( 'status' => 404 ) );
+	   return new \WP_Error( 'no_data', 'The range in days, must be included', array( 'status' => 400 ) );
    }
 
    $days = intval($request->get_param( 'days' ));

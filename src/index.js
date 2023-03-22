@@ -42,11 +42,19 @@ domReady( function () {
 				credentials: 'include',
 				headers,
 			} )
-				.then( ( res ) => res.json() )
+				.then( async ( res ) => {
+					if ( res.status === 200 ) {
+						return res.json()
+					} else {
+						throw new Error("HTTP status " + res.status);
+					}
+				} )
 				.then( ( newData ) => {
 					setData( newData );
 				} )
-				.catch( ( err ) => console.warn( err ) );
+				.catch( ( err ) => {
+					console.warn(err)
+				} );
 		}, [ selectedDays ] );
 
 		return (
