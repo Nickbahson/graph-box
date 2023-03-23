@@ -20,13 +20,13 @@ namespace Nick\GraphBox;
 
 use WP_REST_Request;
 
-if (!defined('ABSPATH')) {
+if ( ! defined('ABSPATH' ) ) {
 	exit();
 }
 
 define( 'GRAPH_BOX_PLUGIN_DIR', __DIR__ );
 
-if (!class_exists('Graph_Box')) {
+if ( ! class_exists('Graph_Box' ) ) {
 	class Graph_Box {
 		public static $instance;
 
@@ -37,18 +37,17 @@ if (!class_exists('Graph_Box')) {
 
 	  register_deactivation_hook( __FILE__, array( $this, 'graph_box_uninstall_setup' ) );
 
-			add_action( 'wp_dashboard_setup', array ($this, 'add_graph_box_widget') );
+			add_action( 'wp_dashboard_setup', array($this, 'graph_box_add_widget') );
 
-			add_action( 'admin_enqueue_scripts', array ($this, 'graph_box_admin_scripts'), 10 );
 
-   add_action( 'rest_api_init', array ($this, 'graph_box_rest') );
+   add_action( 'rest_api_init', array($this, 'graph_box_rest') );
 		}
 
 	 /**
    * Initial setup.
 	  * @return void
 	  */
-  public function graph_box_install_setup(){
+  public function graph_box_install_setup() {
 	  global $wpdb;
 	  $table = $wpdb->prefix . "graph_box_entries";
 
@@ -65,15 +64,15 @@ if (!class_exists('Graph_Box')) {
 	  dbDelta( $sql );
 
    // Generate fake data:
-      for ($i = 0; $i < 300; $i++) {
-       $date = date('Y-m-d H:i:s', strtotime( '+'.mt_rand(2,700).' days'));
-       $amount = mt_rand(10, 3000);
+      for ( $i = 0; $i < 300; $i++ ) {
+       $date = date('Y-m-d H:i:s', strtotime( '+'.mt_rand( 2, 700 ).' days' ) );
+       $amount = mt_rand( 10, 3000 );
        $data = array (
          'amount' => $amount,
          'sale_at' => $date
        );
 
-	      $wpdb->insert( $table, $data);
+	      $wpdb->insert( $table, $data );
       }
 
   }
@@ -82,11 +81,10 @@ if (!class_exists('Graph_Box')) {
    * Clean up.
 	  * @return void
 	  */
-  public function graph_box_uninstall_setup(){
+  public function graph_box_uninstall_setup() {
 	  global $wpdb;
-	  $tables = array(
-		  $wpdb->prefix . "graph_box_entries",
-	  );
+	  $tables = array( $wpdb->prefix . "graph_box_entries" );
+
 	  foreach ( $tables as $table ) {
 		  $sql = "DROP TABLE IF EXISTS $table";
 		  $wpdb->query( $sql );
@@ -98,50 +96,14 @@ if (!class_exists('Graph_Box')) {
    * Defines a dashboard widget.
 	  * @return void
 	  */
-  public function add_graph_box_widget() {
+  public function graph_box_add_widget() {
 			wp_add_dashboard_widget(
 				'graph_box_view',
 				__( 'Graph Box', 'graph-box' ),
-				array( $this, 'render_graph_box_widget' )
+				array( $this, 'graph_box_render_widget' )
 			);
 		}
 
-	 /**
-   * Registers and loads the react app script
-	  * @return void
-	  */
-  public function graph_box_admin_scripts(){
-			$scripts = plugins_url('/', __FILE__ ). 'build/index.js';
-			wp_register_script(
-				'graph-box',
-				$scripts,
-				array('react', 'react-dom', 'wp-api', 'wp-components', 'wp-dom-ready', 'wp-element', 'wp-i18n'),
-				1,
-				false
-			);
-
-			wp_enqueue_script(
-				'graph-box',
-				$scripts,
-				array('react', 'react-dom', 'wp-api', 'wp-components', 'wp-dom-ready', 'wp-element', 'wp-i18n'),
-				1,
-				true
-			);
-
-   // script variables
-	  $rest_url = get_rest_url( null, 'graph-box/v1/data/' );
-
-   $data = array ('rest_url' => $rest_url);
-
-			wp_add_inline_script('graph-box', 'var graphBoxData = '. wp_json_encode( $data ));
-
-	  wp_localize_script('graph-box', 'wpApiSettings', array(
-		  'root' => esc_url_raw(rest_url()),
-		  'nonce' => wp_create_nonce('wp_rest')
-	  ));
-
-
-		}
 
 	 /**
    * Defines a rest route.
@@ -150,15 +112,15 @@ if (!class_exists('Graph_Box')) {
   public function graph_box_rest() {
     register_rest_route( 'graph-box/v1', '/data/', array(
      'methods' => 'GET',
-     'callback' => array ($this, 'graph_box_data'),
-     'permission_callback' => array ($this, 'validate_user'),
-    ));
+     'callback' => array ( $this, 'graph_box_data' ),
+     'permission_callback' => array ( $this, 'graph_box_validate_user' ),
+    ) );
   }
 
-  public function validate_user() {
+  public function graph_box_validate_user() {
 	  $user = wp_get_current_user();
-	  $allowed_roles = array('administrator');
-	  if( array_intersect($allowed_roles, $user->roles ) ) {
+	  $allowed_roles = array( 'administrator' );
+	  if( array_intersect( $allowed_roles, $user->roles ) ) {
 	   return true;
    } else {
     return false;
@@ -172,24 +134,24 @@ if (!class_exists('Graph_Box')) {
 	  *
 	  * @return array|object|\stdClass[]|\WP_Error
 	  */
-  public function graph_box_data(WP_REST_Request $request) {
+  public function graph_box_data( WP_REST_Request $request ) {
 
-   if ($request->get_param( 'days' ) == null ) {
+   if ( null == $request->get_param( 'days' ) ) {
 	   return new \WP_Error( 'no_data', 'The range in days, must be included', array( 'status' => 400 ) );
    }
 
-   $days = intval($request->get_param( 'days' ));
+   $days = intval( $request->get_param( 'days' ) );
 
 	  global $wpdb;
 
-	  $prepared = [];
+	  $prepared = array();
 
    $table = $wpdb->prefix . "graph_box_entries";
 
 	  $data_sql = "SELECT DATE_FORMAT(sale_at, '%Y-%m-%d') as period_start_date, SUM(amount) as total_amount FROM {$table}";
 	  $prepared[]  = $wpdb->prepare("GROUP BY FLOOR(DATEDIFF(sale_at, '2020-01-01') / %s)", $days);
 
-	  $data_sql .= ' '.join($prepared);
+	  $data_sql .= ' '.join( $prepared );
 
 	  $data = $wpdb->get_results( $data_sql, OBJECT );
 
@@ -205,7 +167,30 @@ if (!class_exists('Graph_Box')) {
    * Outputs the markup to attach the react app to.
 	  * @return void
 	  */
-  public function render_graph_box_widget() {
+  public function graph_box_render_widget() {
+
+   // Scripts related to this dom element/widget
+	  $scripts = plugins_url( '/', __FILE__ ). 'build/index.js';
+	  wp_enqueue_script(
+		  'graph-box',
+		  $scripts,
+		  array( 'react', 'react-dom', 'wp-components', 'wp-dom-ready', 'wp-element', 'wp-i18n', ),
+		  1,
+		  true
+	  );
+
+	  // script variables
+	  $rest_url = get_rest_url( null, 'graph-box/v1/data/' );
+
+	  $data = array ( 'rest_url' => $rest_url );
+
+	  wp_add_inline_script('graph-box', 'var graphBoxData = '. wp_json_encode( $data ) );
+
+	  wp_localize_script('graph-box', 'wpApiSettings', array(
+		  'root' => esc_url_raw(rest_url()),
+		  'nonce' => wp_create_nonce( 'wp_rest' )
+	  ) );
+
 			?>
 			<div id="graph-box-wrapper">
 
@@ -218,13 +203,13 @@ if (!class_exists('Graph_Box')) {
    * Runs a single instance of Graph_Box
 	  * @return Graph_Box
 	  */
-		public static function run(){
-			if (!isset(self::$instance)) {
+		public static function graph_box_run() {
+			if ( !isset( self::$instance ) ) {
 				self::$instance = new Graph_Box();
 			}
 			return self::$instance;
 		}
 	}
 
-	Graph_Box::run();
+	Graph_Box::graph_box_run();
 }

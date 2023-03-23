@@ -70,9 +70,9 @@ domReady( function () {
 									label={ __( 'Days', 'graph-box' ) }
 									value={ selectedDays }
 									options={ [
-										{ label: '7 days', value: '7' },
-										{ label: '15 days', value: '15' },
-										{ label: '1 Month', value: '30' },
+										{ label: __( '7 days', 'graph-box' ), value: '7' },
+										{ label:  __( '15 days', 'graph-box' ), value: '15' },
+										{ label:  __( '1 Month', 'graph-box' ), value: '30' },
 									] }
 									onChange={ ( value ) => setDays( value ) }
 									__nextHasNoMarginBottom
