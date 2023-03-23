@@ -69,7 +69,7 @@ if ( ! class_exists('Graph_Box' ) ) {
        $amount = mt_rand( 10, 3000 );
        $data = array (
          'amount' => $amount,
-         'sale_at' => $date
+         'sale_at' => $date,
        );
 
 	      $wpdb->insert( $table, $data );
@@ -100,7 +100,7 @@ if ( ! class_exists('Graph_Box' ) ) {
 			wp_add_dashboard_widget(
 				'graph_box_view',
 				__( 'Graph Box', 'graph-box' ),
-				array( $this, 'graph_box_render_widget' )
+				array( $this, 'graph_box_render_widget' ),
 			);
 		}
 
@@ -176,7 +176,7 @@ if ( ! class_exists('Graph_Box' ) ) {
 		  $scripts,
 		  array( 'react', 'react-dom', 'wp-components', 'wp-dom-ready', 'wp-element', 'wp-i18n', ),
 		  1,
-		  true
+		  true,
 	  );
 
 	  // script variables
@@ -188,7 +188,7 @@ if ( ! class_exists('Graph_Box' ) ) {
 
 	  wp_localize_script('graph-box', 'wpApiSettings', array(
 		  'root' => esc_url_raw(rest_url()),
-		  'nonce' => wp_create_nonce( 'wp_rest' )
+		  'nonce' => wp_create_nonce( 'wp_rest' ),
 	  ) );
 
 			?>
