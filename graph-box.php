@@ -169,7 +169,7 @@ if ( ! class_exists('Graph_Box' ) ) {
 	  */
   public function graph_box_render_widget() {
 
-   // Scripts related to this dom element/widget
+   // Include scripts related to this dom element/widget only when it's rendered.
 	  $scripts = plugins_url( '/', __FILE__ ). 'build/index.js';
 	  wp_enqueue_script(
 		  'graph-box',
