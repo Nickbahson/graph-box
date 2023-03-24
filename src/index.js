@@ -21,7 +21,7 @@ const RenderChart = ( { data, selectedDays } ) => {
 			margin={ { top: 5, right: 30, left: 20, bottom: 5 } }
 		>
 			<XAxis dataKey="period_start_date" stroke="#8884d8" />
-			<YAxis domain={ [ 0, () => 2500 * selectedDays ] } />
+			<YAxis domain={ [ 0, () => 2500 * parseInt( selectedDays ) ] } />
 			<Tooltip />
 			<CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
 			<Bar dataKey="total_amount" fill="#8884d8" barSize={ 10 } />
